@@ -1,0 +1,579 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - SchoolLearn{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .profile-section {
+            padding: 1.5rem 0 2.5rem 0;
+            min-height: calc(100vh - 120px);
+        }
+
+        .profile-container {
+            width: min(1040px, 100%);
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            background: linear-gradient(145deg, #0f3c2f, #0e9f6e);
+            color: #ecfff8;
+            padding: 2rem;
+            border-radius: 16px 16px 0 0;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: #ecfff8;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
+            border: 4px solid rgba(255, 255, 255, 0.34);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profile-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .profile-avatar-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 40% 25%, #ecfff8 0%, #c8f0de 90%);
+            color: #0e9f6e;
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .profile-details {
+            background: linear-gradient(165deg, #ffffff, #f8fbf9);
+            padding: 1.9rem;
+            border-radius: 0 0 16px 16px;
+            border: 1px solid var(--border);
+            border-top: 0;
+            box-shadow: var(--shadow);
+        }
+
+        .detail-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 1.1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9f0ec;
+            align-items: center;
+        }
+
+        .detail-label {
+            width: 180px;
+            font-weight: 700;
+            color: #2d4f44;
+            font-size: 0.95rem;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: var(--text);
+            font-size: 0.98rem;
+            min-width: 180px;
+        }
+
+        .detail-item {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+        }
+
+        .progress-container {
+            margin-top: 20px !important;
+            background: #f4faf7;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .progress-container h3 {
+            margin: 0 0 10px 0;
+            color: #1f4a3b;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: #dfece6;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0e9f6e, #26c281);
+            width: 0%;
+            transition: width 0.8s ease;
+            border-radius: 999px;
+        }
+
+        #progressText {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        .detail-section {
+            margin-top: 1.2rem;
+        }
+
+        .detail-section h3 {
+            color: #1f4a3b;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0 1.6rem 0;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 18px rgba(18, 46, 40, 0.08);
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.05s; }
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.15s; }
+        .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0e7e58;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .recent-activity {
+            background: #ffffff;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 18px rgba(18, 46, 40, 0.07);
+        }
+
+        .recent-activity h3 {
+            margin-top: 0;
+            color: #1f4a3b;
+            margin-bottom: 0.9rem;
+            border-bottom: 1px solid #e9f0ec;
+            padding-bottom: 0.7rem;
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .activity-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f5f2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-subject {
+            font-weight: 700;
+            color: #24614c;
+            font-size: 0.95rem;
+        }
+
+        .activity-score {
+            background: #e8f6ef;
+            color: #24614c;
+            padding: 0.28rem 0.72rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .activity-time {
+            font-size: 0.82rem;
+            color: #7a8f87;
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        .btn-save {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--primary);
+            color: #f7fffb;
+            font-weight: 700;
+            padding: 0 18px;
+            cursor: pointer;
+            margin-top: 0.8rem;
+        }
+
+        .profile-form {
+            margin-top: 1.2rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #2d4f44;
+        }
+
+        .form-group input,
+        .form-group select {
+            min-height: 42px;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #ffffff;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .profile-form .btn-save {
+            grid-column: 1 / -1;
+            justify-self: start;
+        }
+
+        .back-link {
+            margin-top: 14px;
+        }
+
+        .back-link a {
+            color: #0b7b57;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            position: relative;
+            overflow: hidden;
+            background: #eef5f1;
+            border-radius: 4px;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.65) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .profile-avatar {
+                width: 92px;
+                height: 92px;
+                font-size: 2.2rem;
+            }
+
+            .profile-details {
+                padding: 1.2rem;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .detail-label,
+            .detail-value {
+                width: 100%;
+            }
+
+            .quiz-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quiz-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .activity-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stat-value {
+                font-size: 1.55rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <section class="profile-section">
+        <div class="container">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img
+                            id="userAvatarImage"
+                            class="profile-avatar-img"
+                            src="{{ current_user.avatar_url if current_user.avatar_url else '' }}"
+                            alt="Profile photo"
+                            style="{{ '' if current_user.avatar_url else 'display:none;' }}"
+                        >
+                        <div id="userAvatarFallback" class="profile-avatar-fallback" style="{{ 'display:none;' if current_user.avatar_url else '' }}">
+                            {{ current_user.username[:1]|upper if current_user.username else 'U' }}
+                        </div>
+                    </div>
+                    <h1 id="userName">{{ current_user.username }}</h1>
+                    <p id="userSchool">{{ current_user.school if current_user.school else 'School not set' }}</p>
+                </div>
+                
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value" id="userEmail">{{ current_user.email }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Last Login:</span>
+                            <span id="lastLogin">{{ now.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+                        </div>
+                        
+                        <div class="progress-container" style="margin-top: 30px;">
+                            <h3>Overall Progress</h3>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="overallProgress"></div>
+                            </div>
+                            <div style="text-align: right; margin-top: 5px;" id="progressText">0% Complete</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3>Quiz Statistics</h3>
+                        <div class="quiz-stats">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalQuizzes">0</div>
+                                <div class="stat-label">Quizzes Taken</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="avgScore">0%</div>
+                                <div class="stat-label">Average Score</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalQuestions">0</div>
+                                <div class="stat-label">Questions Answered</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="correctAnswers">0%</div>
+                                <div class="stat-label">Correct Answers</div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-activity">
+                            <h3>Recent Activity</h3>
+                            <ul class="activity-list" id="recentActivity">
+                                <li class="activity-item">
+                                    <span>No recent activity</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <form id="profileForm" class="profile-form">
+                        <div class="form-group">
+                            <label for="grade">Grade/Class</label>
+                            <select id="grade" name="grade">
+                                <option value="9th" {% if current_user.grade == '9th' %}selected{% endif %}>9th</option>
+                                <option value="10th" {% if current_user.grade == '10th' %}selected{% endif %}>10th</option>
+                                <option value="11th" {% if current_user.grade == '11th' %}selected{% endif %}>11th</option>
+                                <option value="12th" {% if current_user.grade == '12th' %}selected{% endif %}>12th</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="school">School</label>
+                            <input type="text" id="school" value="{{ current_user.school if current_user.school else '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="avatar_url">Profile Image URL</label>
+                            <input type="url" id="avatar_url" placeholder="https://example.com/avatar.jpg" value="{{ current_user.avatar_url if current_user.avatar_url else '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="joined">Joined Date</label>
+                            <input type="text" id="joined" value="{{ current_user.joined_at.strftime('%B %Y') if current_user.joined_at else '' }}" readonly>
+                        </div>
+                        <button type="submit" class="btn-save">Save Changes</button>
+                    </form>
+                    <div class="back-link">
+                        <a href="/">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const form = document.getElementById('profileForm');
+        const avatarInput = document.getElementById('avatar_url');
+        const avatarImg = document.getElementById('userAvatarImage');
+        const avatarFallback = document.getElementById('userAvatarFallback');
+
+        function applyAvatarPreview() {
+            const raw = (avatarInput?.value || '').trim();
+            if (!avatarImg || !avatarFallback) return;
+            if (!raw) {
+                avatarImg.style.display = 'none';
+                avatarImg.removeAttribute('src');
+                avatarFallback.style.display = 'flex';
+                return;
+            }
+            avatarImg.src = raw;
+            avatarImg.style.display = 'block';
+            avatarFallback.style.display = 'none';
+        }
+
+        if (avatarImg) {
+            avatarImg.addEventListener('error', function () {
+                avatarImg.style.display = 'none';
+                avatarFallback.style.display = 'flex';
+            });
+        }
+
+        if (avatarInput) {
+            avatarInput.addEventListener('input', applyAvatarPreview);
+            avatarInput.addEventListener('change', applyAvatarPreview);
+        }
+
+        if (form) {
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const grade = (document.getElementById('grade')?.value || '').trim();
+                const school = (document.getElementById('school')?.value || '').trim();
+                const avatar_url = (avatarInput?.value || '').trim();
+                const submitBtn = form.querySelector('.btn-save');
+                const prevText = submitBtn ? submitBtn.textContent : '';
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Saving...';
+                }
+
+                try {
+                    const response = await fetch('{{ url_for("update_profile") }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ grade, school, avatar_url }),
+                    });
+                    const data = await response.json().catch(() => ({}));
+                    if (!response.ok) {
+                        alert(data.error || 'Failed to save profile.');
+                        return;
+                    }
+                    applyAvatarPreview();
+                    const schoolText = document.getElementById('userSchool');
+                    if (schoolText) {
+                        schoolText.textContent = school || 'School not set';
+                    }
+                    alert('Profile updated successfully.');
+                } catch (err) {
+                    alert('Could not save profile right now.');
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = prevText || 'Save Changes';
+                    }
+                }
+            });
+        }
+
+        applyAvatarPreview();
+    })();
+</script>
+{% endblock %}
